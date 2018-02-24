@@ -1,4 +1,6 @@
+import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -9,6 +11,8 @@ public class Percolation {
 	private static int size;
 	private int openSites = 0;
 	private int[][] grid;
+	
+	private boolean percolates = false;
 	
 	private WeightedQuickUnionUF wqUn;
 	
@@ -44,6 +48,10 @@ public class Percolation {
 			grid[row][col] = 1;
 			openSites++;
 		}
+		
+		performUnions(row, col);
+		
+		percolates = percolates();
 	}
 	
 	public boolean isOpen(int row, int col) {
@@ -62,13 +70,70 @@ public class Percolation {
 		return wqUn.connected(VIRTUAL_TOP, VIRTUAL_BOT);
 	}
 	
-	public static void main(String[] args) {
-		Percolation test = new Percolation(13);
-		test.printGrid();
+	public void performUnions(int row, int col) {
+		int up;
+		int down;
+		int left;
+		int right;
 		
-		StdOut.println(gridToWQUN(0, 9));
-		StdOut.println(gridToWQUN(1, 12));
-		StdOut.println(gridToWQUN(5, 11));
+		int wqUnCoord = gridToWQUN(row, col);
+		
+		if (row != 0) {
+			if (grid[row - 1][col] == 1) {
+				up = gridToWQUN(row - 1, col);
+				wqUn.union(wqUnCoord, up);
+			}
+		}
+		
+		if (row != size - 1) {
+			if (grid[row + 1][col] == 1) {
+				down = gridToWQUN(row + 1, col);
+				wqUn.union(wqUnCoord, down);
+			}
+		}
+		
+		if (col != 0) {
+			if (grid[row][col - 1] == 1) {
+				left = gridToWQUN(row, col - 1);
+				wqUn.union(wqUnCoord, left);
+			}
+		}
+		
+		if (col != size - 1) {
+			if (grid[row][col + 1] == 1) {
+				right = gridToWQUN(row, col + 1);
+				wqUn.union(wqUnCoord, right);
+			}
+		}
+		
+		StdOut.println("Number of Components: " + wqUn.count());
+	}
+	
+	public static void main(String[] args) {
+		StdOut.println("Specify size of grid: " );
+		int runSize = StdIn.readInt();
+		Percolation test = new Percolation(runSize);
+		StdRandom.setSeed(System.currentTimeMillis());
+		
+		char input = ' ';
+		
+		while(input != 'q') {
+			StdOut.println("Press any button to open random site, press 'q' to quit");			
+			
+			if(input != 'q' && input != ' ') {
+				int openX = StdRandom.uniform(runSize);
+				int openY = StdRandom.uniform(runSize);
+				test.open(openX, openY);
+				test.printGrid();
+			}
+			
+			input = StdIn.readString().charAt(0);
+			
+			if (test.percolates) {
+				StdOut.println("SYSTEM PERCOLATES!!!");
+				System.exit(0);
+			}
+		}
 	}
 	
 	public void printGrid() {
