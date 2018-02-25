@@ -12,6 +12,8 @@ public class Percolation {
 	private int openSites = 0;
 	private int[][] grid;
 	
+	private double percThreshold = 0.0;
+	
 	private boolean percolates = false;
 	
 	private WeightedQuickUnionUF wqUn;
@@ -50,8 +52,6 @@ public class Percolation {
 		}
 		
 		performUnions(row, col);
-		
-		percolates = percolates();
 	}
 	
 	public boolean isOpen(int row, int col) {
@@ -68,6 +68,10 @@ public class Percolation {
 	
 	public boolean percolates() {
 		return wqUn.connected(VIRTUAL_TOP, VIRTUAL_BOT);
+	}
+	
+	public double percolationThreshold() {
+		return percThreshold;
 	}
 	
 	public void performUnions(int row, int col) {
@@ -106,7 +110,27 @@ public class Percolation {
 			}
 		}
 		
-		StdOut.println("Number of Components: " + wqUn.count());
+		percolates = percolates();
+		
+		if (percolates) {
+			percThreshold = (double) openSites / (double) (size * size);
+		}
+		
+//		StdOut.println("Number of Components: " + wqUn.count());
+	}
+	
+	public void runSim() {
+		StdRandom.setSeed(System.currentTimeMillis());
+		
+		int openX = StdRandom.uniform(size);
+		int openY = StdRandom.uniform(size);
+		
+		while (!percolates) {
+			openX = StdRandom.uniform(size);
+			openY = StdRandom.uniform(size);
+			open(openX, openY);
+//			printGrid();
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -115,22 +139,15 @@ public class Percolation {
 		Percolation test = new Percolation(runSize);
 		StdRandom.setSeed(System.currentTimeMillis());
 		
-		char input = ' ';
-		
-		while(input != 'q') {
-			StdOut.println("Press any button to open random site, press 'q' to quit");			
-			
-			if(input != 'q' && input != ' ') {
-				int openX = StdRandom.uniform(runSize);
-				int openY = StdRandom.uniform(runSize);
-				test.open(openX, openY);
-				test.printGrid();
-			}
-			
-			input = StdIn.readString().charAt(0);
-			
+		while (!test.percolates) {
+			int openX = StdRandom.uniform(runSize);
+			int openY = StdRandom.uniform(runSize);
+			test.open(openX, openY);
+			test.printGrid();
+
 			if (test.percolates) {
 				StdOut.println("SYSTEM PERCOLATES!!!");
+				StdOut.println("Threshold: " + test.percThreshold);
 				System.exit(0);
 			}
 		}
