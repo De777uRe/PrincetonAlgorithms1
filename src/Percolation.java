@@ -45,21 +45,22 @@ public class Percolation {
 	}
 	
 	public void open(int row, int col) {
-		if (grid[row][col] != 1)
+		if (grid[row - 1][col - 1] != 1)
 		{
-			grid[row][col] = 1;
+			grid[row - 1][col - 1] = 1;
 			openSites++;
 		}
 		
-		performUnions(row, col);
+		performUnions(row - 1, col - 1);
 	}
 	
 	public boolean isOpen(int row, int col) {
-		return grid[row][col] == 1;
+		return grid[row - 1][col - 1] == 1;
 	}
 	
 	public boolean isFull(int row, int col) {
-		return wqUn.connected(grid[row][col], VIRTUAL_TOP);
+		int wqunCoord = gridToWQUN(row-1, col-1);
+		return isOpen(row, col) && wqUn.connected(wqunCoord, VIRTUAL_TOP);
 	}
 	
 	public int numberOfOpenSites() {
@@ -122,12 +123,12 @@ public class Percolation {
 	public void runSim() {
 		StdRandom.setSeed(System.currentTimeMillis());
 		
-		int openX = StdRandom.uniform(size);
-		int openY = StdRandom.uniform(size);
+		int openX = StdRandom.uniform(size) + 1;
+		int openY = StdRandom.uniform(size) + 1;
 		
 		while (!percolates) {
-			openX = StdRandom.uniform(size);
-			openY = StdRandom.uniform(size);
+			openX = StdRandom.uniform(size) + 1;
+			openY = StdRandom.uniform(size) + 1;
 			open(openX, openY);
 //			printGrid();
 		}
@@ -140,8 +141,8 @@ public class Percolation {
 		StdRandom.setSeed(System.currentTimeMillis());
 		
 		while (!test.percolates) {
-			int openX = StdRandom.uniform(runSize);
-			int openY = StdRandom.uniform(runSize);
+			int openX = StdRandom.uniform(runSize) + 1;
+			int openY = StdRandom.uniform(runSize) + 1;
 			test.open(openX, openY);
 			test.printGrid();
 
@@ -164,6 +165,7 @@ public class Percolation {
 				}
 			}
 		}
+		StdOut.println();
 	}
 	
 	public static int gridToWQUN(int row, int col)
