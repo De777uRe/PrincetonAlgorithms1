@@ -12,8 +12,6 @@ public class Percolation {
 	private int openSites = 0;
 	private int[][] grid;
 	
-	private double percThreshold = 0.0;
-	
 	private boolean percolates = false;
 	
 	private WeightedQuickUnionUF wqUn;
@@ -32,15 +30,23 @@ public class Percolation {
 			wqUn = new WeightedQuickUnionUF(size*size + 2);
 			
 			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					grid[i][j] = 0;
-				}
-			}
-			
-			for (int i = 0; i < n; i++) {
 				wqUn.union(gridToWQUN(0, i), VIRTUAL_TOP);
 				wqUn.union(gridToWQUN(size-1, i), VIRTUAL_BOT);
 			}
+			
+			StdRandom.setSeed(System.currentTimeMillis());
+			
+			int openX = StdRandom.uniform(size) + 1;
+			int openY = StdRandom.uniform(size) + 1;
+			
+			while (!percolates) {
+				openX = StdRandom.uniform(size) + 1;
+				openY = StdRandom.uniform(size) + 1;
+				open(openX, openY);
+//				printGrid();
+			}
+			
+//			StdOut.println("System percolates!!!");
 		}
 	}
 	
@@ -71,11 +77,7 @@ public class Percolation {
 		return wqUn.connected(VIRTUAL_TOP, VIRTUAL_BOT);
 	}
 	
-	public double percolationThreshold() {
-		return percThreshold;
-	}
-	
-	public void performUnions(int row, int col) {
+	private void performUnions(int row, int col) {
 		int up;
 		int down;
 		int left;
@@ -112,15 +114,10 @@ public class Percolation {
 		}
 		
 		percolates = percolates();
-		
-		if (percolates) {
-			percThreshold = (double) openSites / (double) (size * size);
-		}
-		
 //		StdOut.println("Number of Components: " + wqUn.count());
 	}
 	
-	public void runSim() {
+	private void runSim() {
 		StdRandom.setSeed(System.currentTimeMillis());
 		
 		int openX = StdRandom.uniform(size) + 1;
@@ -148,13 +145,12 @@ public class Percolation {
 
 			if (test.percolates) {
 				StdOut.println("SYSTEM PERCOLATES!!!");
-				StdOut.println("Threshold: " + test.percThreshold);
 				System.exit(0);
 			}
 		}
 	}
 	
-	public void printGrid() {
+	private void printGrid() {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				if (j < size - 1) {
@@ -168,7 +164,7 @@ public class Percolation {
 		StdOut.println();
 	}
 	
-	public static int gridToWQUN(int row, int col)
+	private static int gridToWQUN(int row, int col)
 	{
 		return size * row + col;
 	}

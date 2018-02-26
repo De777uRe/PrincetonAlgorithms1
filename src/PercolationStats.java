@@ -13,9 +13,8 @@ public class PercolationStats {
 		
 		for (int i = 0; i < trials; i++) {
 			Percolation percSim = new Percolation(size);
-			percSim.runSim();
 			
-			thresholds[i] = percSim.percolationThreshold();
+			thresholds[i] = (double) percSim.numberOfOpenSites() / (double) (size * size);
 		}
 		
 		StdOut.println("mean\t\t\t = " + mean());
