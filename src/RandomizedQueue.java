@@ -15,8 +15,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
     
-    Node first;
-    int size;
+    private Node first;
+    private int size;
     
     public RandomizedQueue() {
         first = null;
