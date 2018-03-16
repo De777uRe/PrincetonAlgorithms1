@@ -4,10 +4,15 @@ public class BruteCollinearPoints {
     private LineSegment[] lineSegments;
     
     public BruteCollinearPoints(Point[] points) {
-        Point[] collinearPoints;
-        for (int i = 0; i < points.length; i++) {
-            
+        double firstSlope = 0.0;
+        double slope = 0.0;
+        
+        firstSlope = points[0].slopeTo(points[1]);
+        
+        for (int i = 2; i < points.length; i++) {
+            slope = points[0].slopeTo(points[i]);
         }
+        
     }
     
     public int numberOfSegments() {

@@ -42,7 +42,7 @@ public class Deque<Item> implements Iterable<Item> {
     
     public void addLast (Item item) {
         if (item == null) {
-            throw new IllegalArgumentException("Item is nul");
+            throw new IllegalArgumentException("Item is null");
         }
         
         if (first == null) {
